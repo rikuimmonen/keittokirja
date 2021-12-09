@@ -22,7 +22,8 @@ app.use('/thumbnails', express.static('thumbnails'));
 app.use(passport.initialize());
 
 app.use('/auth', authRoute);
-app.use('/recipe', passport.authenticate('jwt', {session: false}), recipeRoute);
+// app.use('/recipe', passport.authenticate('jwt', {session: false}), recipeRoute);
+app.use('/recipe', recipeRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
 
 app.use((req, res, next) => {

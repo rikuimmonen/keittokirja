@@ -16,7 +16,7 @@ const {body} = require('express-validator');
 router.route('/').
     get(recipe_list_get).
     post(upload.single('recipe'),
-        body('name').not().isEmpty().escape(),
+        //body('name').not().isEmpty().escape(),
         recipe_post,
     );
 

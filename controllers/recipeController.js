@@ -36,6 +36,8 @@ const recipe_get = async (req, res, next) => {
 };
 
 const recipe_post = async (req, res, next) => {
+  console.log(req.body);
+
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -57,7 +59,7 @@ const recipe_post = async (req, res, next) => {
     );
     const {name} = req.body;
     const recipe = req.file.filename;
-    const result = await addCat(name, next);
+    const result = await addRecipe(name, next);
     if (thumbnail) {
       if (result.affectedRows > 0) {
         res.json({
@@ -83,7 +85,7 @@ const recipe_put = async (req, res, next) => {
       owner = req.body.owner;
     }
 
-    const result = await modifyCat(req.params.id, name, owner, req.user.role,
+    const result = await editRecipe(req.params.id, name, owner, req.user.role,
         next);
     if (result.affectedRows > 0) {
       res.json({
