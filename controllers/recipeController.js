@@ -40,6 +40,7 @@ const recipe_post = async (req, res, next) => {
 
   const errors = validationResult(req);
 
+  /*
   if (!errors.isEmpty()) {
     console.log('recipe_post validation', errors.array());
     next(httpError('invalid data', 400));
@@ -51,8 +52,10 @@ const recipe_post = async (req, res, next) => {
     next(err);
     return;
   }
+  */
 
   try {
+    /*
     const thumbnail = await makeThumbnail(
         req.file.path,
         './thumbnails/' + req.file.filename,
@@ -69,6 +72,15 @@ const recipe_post = async (req, res, next) => {
       }
     } else {
       next(httpError('No recipe inserted', 400));
+    }
+    */
+    const {recipeTitle, recipeTime, recipeSize, recipeIngredient1, recipeDirection1} = req.body;
+    const result = await addRecipe(recipeTitle, next);
+    if (result.affectedRows > 0) {
+      res.json({
+        message: 'recipe added',
+        recipe_id: result.insertId,
+      });
     }
   } catch (e) {
     console.log('recipe_post error', e.message);

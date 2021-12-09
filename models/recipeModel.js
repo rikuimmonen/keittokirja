@@ -6,7 +6,8 @@ const {httpError} = require('../utils/errors');
 
 const getAllRecipes = async (next) => {
   try {
-    const [rows] = await promisePool.execute('SELECT * FROM kk_recipe');
+    let [rows] = await promisePool.execute(
+        'SELECT title, ingredient.content AS i, direction.content AS d FROM recipe, ingredient, direction WHERE recipe.id = ingredient.recipe_id AND recipe.id = direction.recipe_id GROUP BY recipe.id');
     return rows;
   } catch (e) {
     console.error('getAllRecipes error', e.message);
@@ -17,7 +18,7 @@ const getAllRecipes = async (next) => {
 const getRecipe = async (id, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT * FROM kk_recipe WHERE kk_recipe.id = ?', [id]);
+        'SELECT * FROM recipe WHERE kk_recipe.id = ?', [id]);
     return rows;
   } catch (e) {
     console.error('getRecipe error', e.message);
@@ -25,11 +26,14 @@ const getRecipe = async (id, next) => {
   }
 };
 
-const addRecipe = async (name, next) => {
+const addRecipe = async (recipeTitle, next) => {
   try {
+    console.log(recipeTitle)
+    /*
     const [rows] = await promisePool.execute(
-        'INSERT INTO kk_recipe (name) VALUES (?)', [name]);
+        'INSERT INTO recipe (name) VALUES (?)', [name]);
     return rows;
+    */
   } catch (e) {
     console.error('addRecipe error', e.message);
     next(httpError('Database error', 500));
