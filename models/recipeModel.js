@@ -37,9 +37,28 @@ const getAllRecipes = async (next) => {
 
 const getRecipe = async (id, next) => {
   try {
-    const [rows] = await promisePool.execute(
-        'SELECT * FROM recipe WHERE kk_recipe.id = ?', [id]);
-    return rows;
+    let [row] = await promisePool.execute(
+        'SELECT * FROM recipe WHERE id = ' + id + ';');
+
+    let ingredients = [];
+    let directions = [];
+
+    let [ingredientsRaw] = await promisePool.execute(
+        'SELECT content FROM ingredient WHERE recipe_id = ' + id +
+        ';');
+    let [directionsRaw] = await promisePool.execute(
+        'SELECT content FROM direction WHERE recipe_id = ' + id + ';');
+
+    for (let j = 0; j < ingredientsRaw.length; j++) {
+      ingredients[j] = ingredientsRaw[j].content;
+    }
+    for (let j = 0; j < directionsRaw.length; j++) {
+      directions[j] = directionsRaw[j].content;
+    }
+
+    row[0].ingredients = ingredients;
+    row[0].directions = directions;
+    return row;
   } catch (e) {
     console.error('getRecipe error', e.message);
     next(httpError('Database error', 500));
