@@ -65,14 +65,12 @@ const getRecipe = async (id, next) => {
   }
 };
 
-const addRecipe = async (recipeTitle, next) => {
+const addRecipe = async (title, size, ingredients, directions, creator, img, next) => {
   try {
-    console.log(recipeTitle);
-    /*
     const [rows] = await promisePool.execute(
-        'INSERT INTO recipe (name) VALUES (?)', [name]);
+        'INSERT INTO recipe (title, size, creator, image_url, date) VALUES (?, ?, ?, ?, NOW());',
+        [title, size, creator, img]);
     return rows;
-    */
   } catch (e) {
     console.error('addRecipe error', e.message);
     next(httpError('Database error', 500));

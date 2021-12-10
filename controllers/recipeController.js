@@ -36,11 +36,8 @@ const recipe_get = async (req, res, next) => {
 };
 
 const recipe_post = async (req, res, next) => {
-  console.log(req.body);
-
   const errors = validationResult(req);
 
-  /*
   if (!errors.isEmpty()) {
     console.log('recipe_post validation', errors.array());
     next(httpError('invalid data', 400));
@@ -52,17 +49,17 @@ const recipe_post = async (req, res, next) => {
     next(err);
     return;
   }
-  */
 
   try {
-    /*
     const thumbnail = await makeThumbnail(
         req.file.path,
         './thumbnails/' + req.file.filename,
     );
-    const {name} = req.body;
-    const recipe = req.file.filename;
-    const result = await addRecipe(name, next);
+    const {recipeTitle, recipeSize, ingredients, directions} = req.body;
+    const img = req.file.filename;
+    // const user_id = req.user.user_id;
+    const user_id = 1;
+    const result = await addRecipe(recipeTitle, recipeSize, ingredients, directions, user_id, img, next);
     if (thumbnail) {
       if (result.affectedRows > 0) {
         res.json({
@@ -72,15 +69,6 @@ const recipe_post = async (req, res, next) => {
       }
     } else {
       next(httpError('No recipe inserted', 400));
-    }
-    */
-    const {recipeTitle, recipeTime, recipeSize, recipeIngredient1, recipeDirection1} = req.body;
-    const result = await addRecipe(recipeTitle, next);
-    if (result.affectedRows > 0) {
-      res.json({
-        message: 'recipe added',
-        recipe_id: result.insertId,
-      });
     }
   } catch (e) {
     console.log('recipe_post error', e.message);
