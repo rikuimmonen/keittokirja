@@ -6,9 +6,29 @@ const {httpError} = require('../utils/errors');
 
 const getAllRecipes = async (next) => {
   try {
-    let [rows] = await promisePool.execute(
-        'SELECT title, ingredient.content AS i, direction.content AS d FROM recipe, ingredient, direction WHERE recipe.id = ingredient.recipe_id AND recipe.id = direction.recipe_id GROUP BY recipe.id');
-    return rows;
+    let [row] = await promisePool.execute('SELECT * FROM recipe;');
+
+    for (let i = 0; i < row.length; i++) {
+      let ingredients = [];
+      let directions = [];
+
+      let [ingredientsRaw] = await promisePool.execute(
+          'SELECT content FROM ingredient WHERE recipe_id = ' + row[i].id +
+          ';');
+      let [directionsRaw] = await promisePool.execute(
+          'SELECT content FROM direction WHERE recipe_id = ' + row[i].id + ';');
+
+      for (let j = 0; j < ingredientsRaw.length; j++) {
+        ingredients[j] = ingredientsRaw[j].content;
+      }
+      for (let j = 0; j < directionsRaw.length; j++) {
+        directions[j] = directionsRaw[j].content;
+      }
+
+      row[i].ingredients = ingredients;
+      row[i].directions = directions;
+    }
+    return row;
   } catch (e) {
     console.error('getAllRecipes error', e.message);
     next(httpError('Database error', 500));
@@ -28,7 +48,7 @@ const getRecipe = async (id, next) => {
 
 const addRecipe = async (recipeTitle, next) => {
   try {
-    console.log(recipeTitle)
+    console.log(recipeTitle);
     /*
     const [rows] = await promisePool.execute(
         'INSERT INTO recipe (name) VALUES (?)', [name]);
