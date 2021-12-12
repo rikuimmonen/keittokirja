@@ -3,6 +3,8 @@
 const pool = require('../database/db');
 const promisePool = pool.promise();
 const {httpError} = require('../utils/errors');
+const {addIngredient} = require('./ingredientModel');
+const {addDirection} = require('./directionModel');
 
 const getAllRecipes = async (next) => {
   try {
@@ -65,11 +67,14 @@ const getRecipe = async (id, next) => {
   }
 };
 
-const addRecipe = async (title, size, ingredients, directions, creator, img, next) => {
+const addRecipe = async (
+    title, size, time, ingredients, directions, creator, img, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'INSERT INTO recipe (title, size, creator, image_url, date) VALUES (?, ?, ?, ?, NOW());',
-        [title, size, creator, img]);
+        'INSERT INTO recipe (title, size, time, creator, image_url, date) VALUES (?, ?, ?, ?, ?, NOW());',
+        [title, size, time, creator, img]);
+    await addIngredient(ingredients, rows.insertId, next);
+    await addDirection(directions, rows.insertId, next);
     return rows;
   } catch (e) {
     console.error('addRecipe error', e.message);

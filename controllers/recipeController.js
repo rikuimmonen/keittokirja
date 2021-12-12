@@ -55,11 +55,11 @@ const recipe_post = async (req, res, next) => {
         req.file.path,
         './thumbnails/' + req.file.filename,
     );
-    const {recipeTitle, recipeSize, ingredients, directions} = req.body;
+    const {recipeTitle, recipeSize, recipeTime, recipeIngredient, recipeDirection} = req.body;
     const img = req.file.filename;
     // const user_id = req.user.user_id;
     const user_id = 1;
-    const result = await addRecipe(recipeTitle, recipeSize, ingredients, directions, user_id, img, next);
+    const result = await addRecipe(recipeTitle, recipeSize, recipeTime, recipeIngredient, recipeDirection, user_id, img, next);
     if (thumbnail) {
       if (result.affectedRows > 0) {
         res.json({
