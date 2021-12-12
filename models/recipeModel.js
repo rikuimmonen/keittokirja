@@ -3,33 +3,18 @@
 const pool = require('../database/db');
 const promisePool = pool.promise();
 const {httpError} = require('../utils/errors');
-const {addIngredient} = require('./ingredientModel');
-const {addDirection} = require('./directionModel');
+const {addIngredient, getIngredients} = require('./ingredientModel');
+const {addDirection, getDirections} = require('./directionModel');
 
 const getAllRecipes = async (next) => {
   try {
     let [row] = await promisePool.execute('SELECT * FROM recipe;');
 
     for (let i = 0; i < row.length; i++) {
-      let ingredients = [];
-      let directions = [];
-
-      let [ingredientsRaw] = await promisePool.execute(
-          'SELECT content FROM ingredient WHERE recipe_id = ' + row[i].id +
-          ';');
-      let [directionsRaw] = await promisePool.execute(
-          'SELECT content FROM direction WHERE recipe_id = ' + row[i].id + ';');
-
-      for (let j = 0; j < ingredientsRaw.length; j++) {
-        ingredients[j] = ingredientsRaw[j].content;
-      }
-      for (let j = 0; j < directionsRaw.length; j++) {
-        directions[j] = directionsRaw[j].content;
-      }
-
-      row[i].ingredients = ingredients;
-      row[i].directions = directions;
+      row[i].ingredients = await getIngredients(row[i].id, next);
+      row[i].directions = await getDirections(row[i].id, next);
     }
+
     return row;
   } catch (e) {
     console.error('getAllRecipes error', e.message);
@@ -42,24 +27,9 @@ const getRecipe = async (id, next) => {
     let [row] = await promisePool.execute(
         'SELECT * FROM recipe WHERE id = ' + id + ';');
 
-    let ingredients = [];
-    let directions = [];
+    row[0].ingredients = await getIngredients(id, next);
+    row[0].directions = await getDirections(id, next);
 
-    let [ingredientsRaw] = await promisePool.execute(
-        'SELECT content FROM ingredient WHERE recipe_id = ' + id +
-        ';');
-    let [directionsRaw] = await promisePool.execute(
-        'SELECT content FROM direction WHERE recipe_id = ' + id + ';');
-
-    for (let j = 0; j < ingredientsRaw.length; j++) {
-      ingredients[j] = ingredientsRaw[j].content;
-    }
-    for (let j = 0; j < directionsRaw.length; j++) {
-      directions[j] = directionsRaw[j].content;
-    }
-
-    row[0].ingredients = ingredients;
-    row[0].directions = directions;
     return row;
   } catch (e) {
     console.error('getRecipe error', e.message);
