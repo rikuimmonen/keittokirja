@@ -19,6 +19,12 @@ passport.use(new Strategy(
           return done(null, false, {message: 'Incorrect email.'});
         }
 
+        /*
+        if (password !== user.password) { // passwords dont match
+          console.log('here');
+          return done(null, false);
+        }*/
+
         if (!bcrypt.compareSync(password, user.password)) {
           return done(null, false, {message: 'Incorrect password.'});
         }

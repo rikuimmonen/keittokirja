@@ -5,7 +5,7 @@ const {httpError} = require('../utils/errors');
 const getAllUsers = async (next) => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT user_id, name, email, role FROM wop_user');
+        'SELECT id, name, email, password FROM user');
     return rows;
   } catch (e) {
     console.error('getAllUsers error', e.message);
@@ -16,7 +16,7 @@ const getAllUsers = async (next) => {
 const getUser = async (id, next) => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT id, name, email, role FROM user WHERE id = ?',
+        'SELECT id, name, email, password FROM user WHERE id = ?',
         [id]);
     return rows;
   } catch (e) {
