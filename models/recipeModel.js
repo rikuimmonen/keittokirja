@@ -8,11 +8,12 @@ const {addDirection, getDirections} = require('./directionModel');
 
 const getAllRecipes = async (next) => {
   try {
-    let [row] = await promisePool.execute('SELECT * FROM recipe;');
+    let [row] = await promisePool.execute(
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name, user.image_url AS user_image FROM recipe LEFT JOIN user ON creator = user.id');
 
     for (let i = 0; i < row.length; i++) {
-      row[i].ingredients = await getIngredients(row[i].id, next);
-      row[i].directions = await getDirections(row[i].id, next);
+      row[i].ingredients = await getIngredients(row[i].recipe_id, next);
+      row[i].directions = await getDirections(row[i].recipe_id, next);
     }
 
     return row;
@@ -25,7 +26,8 @@ const getAllRecipes = async (next) => {
 const getRecipe = async (id, next) => {
   try {
     let [row] = await promisePool.execute(
-        'SELECT * FROM recipe WHERE id = ' + id + ';');
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name, user.image_url AS user_image FROM recipe LEFT JOIN user ON creator = user.id WHERE recipe.id = ? ;',
+        [id]);
 
     row[0].ingredients = await getIngredients(id, next);
     row[0].directions = await getDirections(id, next);

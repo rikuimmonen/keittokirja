@@ -1,6 +1,8 @@
 const pool = require('../database/db');
 const promisePool = pool.promise();
 const {httpError} = require('../utils/errors');
+const {getIngredients} = require('./ingredientModel');
+const {getDirections} = require('./directionModel');
 
 const getAllUsers = async (next) => {
   try {
@@ -45,7 +47,41 @@ const getUserLogin = async (params) => {
     return rows;
   } catch (e) {
     console.log('getUserLogin error', e.message);
-    // next(httpError('Database error', 500));
+    //next(httpError('Database error', 500));
+  }
+};
+
+const getUsersAllRecipes = async (user_id, next) => {
+  try {
+    let [row] = await promisePool.execute(
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name, user.image_url AS user_image FROM recipe LEFT JOIN user ON creator = user.id WHERE creator = ?',
+        [user_id]);
+
+    for (let i = 0; i < row.length; i++) {
+      row[i].ingredients = await getIngredients(row[i].recipe_id, next);
+      row[i].directions = await getDirections(row[i].recipe_id, next);
+    }
+
+    return row;
+  } catch (e) {
+    console.error('getUserRecipeList error', e.message);
+    next(httpError('Database error', 500));
+  }
+};
+
+const getUsersRecipe = async (user_id, recipe_id, next) => {
+  try {
+    let [row] = await promisePool.execute(
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name, user.image_url AS user_image FROM recipe LEFT JOIN user ON creator = user.id WHERE user.id = ? AND recipe.id = ?;',
+        [user_id, recipe_id]);
+
+    row[0].ingredients = await getIngredients(recipe_id, next);
+    row[0].directions = await getDirections(recipe_id, next);
+
+    return row;
+  } catch (e) {
+    console.error('getUsersRecipe error', e.message);
+    next(httpError('Database error', 500));
   }
 };
 
@@ -53,5 +89,7 @@ module.exports = {
   getAllUsers,
   getUser,
   addUser,
+  getUsersAllRecipes,
+  getUsersRecipe,
   getUserLogin,
 };

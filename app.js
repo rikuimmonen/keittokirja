@@ -24,8 +24,8 @@ app.use(passport.initialize());
 app.use('/auth', authRoute);
 // app.use('/recipe', passport.authenticate('jwt', {session: false}), recipeRoute);
 app.use('/recipe', recipeRoute);
-app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
-//app.use('/user', userRoute);
+//app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
+app.use('/user', userRoute);
 
 app.use((req, res, next) => {
   const err = httpError('Not found', 404);
