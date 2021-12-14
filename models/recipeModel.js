@@ -9,7 +9,7 @@ const {addDirection, getDirections} = require('./directionModel');
 const getAllRecipes = async (next) => {
   try {
     let [row] = await promisePool.execute(
-        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name FROM recipe LEFT JOIN user ON creator = user.id');
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name FROM recipe LEFT JOIN user ON creator = user.id;');
 
     for (let i = 0; i < row.length; i++) {
       row[i].ingredients = await getIngredients(row[i].recipe_id, next);
@@ -72,20 +72,21 @@ const editRecipe = async (id, name, creator, role, next) => {
   }
 };
 
-const deleteRecipe = async (id, owner, role, next) => {
-  let sql = 'DELETE FROM kk_recipe WHERE id = ? AND owner = ?';
-  let params = [id, owner];
+const deleteRecipe = async (id, creator, role, next) => {
+  let sql = 'DELETE FROM recipe WHERE id = ? AND creator = ?';
+  let params = [id, creator];
 
+  /*
   if (role === 0) {
     sql = 'DELETE FROM wop_cat WHERE cat_id = ?';
     params = [id];
   }
-
+  */
   try {
     const [rows] = await promisePool.execute(sql, params);
     return rows;
   } catch (e) {
-    console.error('deleteCat error', e.message);
+    console.error('deleteRecipe error', e.message);
     next(httpError('Database error', 500));
   }
 };

@@ -82,7 +82,7 @@ const recipe_put = async (req, res, next) => {
     let owner = req.user.user_id;
 
     if (req.user.role === 0) {
-      owner = req.body.owner;
+      owner = req.body.creator;
     }
 
     const result = await editRecipe(req.params.id, name, owner, req.user.role,
@@ -103,7 +103,8 @@ const recipe_put = async (req, res, next) => {
 
 const recipe_delete = async (req, res, next) => {
   try {
-    const result = await deleteRecipe(req.params.id, req.user.user_id,
+    console.log(req.params, req.user)
+    const result = await deleteRecipe(req.params.id, req.user.id,
         req.user.role, next);
     if (result.affectedRows > 0) {
       res.json({

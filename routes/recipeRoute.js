@@ -12,6 +12,7 @@ const upload = multer({dest: './uploads/', fileFilter}); // destination relative
 const {recipe_list_get, recipe_get, recipe_post, recipe_put, recipe_delete} = require(
     '../controllers/recipeController');
 const {body} = require('express-validator');
+const passport = require('../utils/pass');
 
 router.route('/').
     get(recipe_list_get).
@@ -23,6 +24,6 @@ router.route('/').
 router.route('/:id').
     put(recipe_put).
     get(recipe_get).
-    delete(recipe_delete);
+    delete(passport.authenticate('jwt', {session: false}), recipe_delete);
 
 module.exports = router;
