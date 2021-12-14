@@ -8,23 +8,17 @@ const addIngredient = async (ingredients, recipe_id, next) => {
   try {
     let rows = [];
     let row = '';
-    let previous;
 
     if (!Array.isArray(ingredients)) {
-      [ingredients] = ingredients;
+      let ingredient = ingredients;
+      ingredients = [];
+      ingredients.push(ingredient)
     }
 
     for (let i = 0; i < ingredients.length; i++) {
-      if (i === 0) {
-        [row] = await promisePool.execute(
-            'INSERT INTO ingredient (content, recipe_id) VALUES (?, ?);',
-            [ingredients[i], recipe_id]);
-      } else {
-        previous = row !== '' ? row.insertId : '';
-        [row] = await promisePool.execute(
-            'INSERT INTO ingredient (content, recipe_id, previous) VALUES (?, ?, ?);',
-            [ingredients[i], recipe_id, previous]);
-      }
+      [row] = await promisePool.execute(
+          'INSERT INTO ingredient (content, recipe_id) VALUES (?, ?);',
+          [ingredients[i], recipe_id]);
 
       rows.push(row);
     }

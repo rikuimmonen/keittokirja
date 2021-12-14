@@ -73,6 +73,7 @@ const editRecipe = async (id, name, creator, role, next) => {
 };
 
 const deleteRecipe = async (id, creator, role, next) => {
+  console.log(id);
   let sql = 'DELETE FROM recipe WHERE id = ? AND creator = ?';
   let params = [id, creator];
 

@@ -8,23 +8,17 @@ const addDirection = async (directions, recipe_id, next) => {
   try {
     let rows = [];
     let row = '';
-    let previous;
 
     if (!Array.isArray(directions)) {
-      [directions] = directions;
+      let direction = directions;
+      directions = [];
+      directions.push(direction)
     }
 
     for (let i = 0; i < directions.length; i++) {
-      if (i === 0) {
-        [row] = await promisePool.execute(
-            'INSERT INTO direction (content, recipe_id) VALUES (?, ?);',
-            [directions[i], recipe_id]);
-      } else {
-        previous = row !== '' ? row.insertId : '';
-        [row] = await promisePool.execute(
-            'INSERT INTO direction (content, recipe_id, previous) VALUES (?, ?, ?);',
-            [directions[i], recipe_id, previous]);
-      }
+      [row] = await promisePool.execute(
+          'INSERT INTO direction (content, recipe_id) VALUES (?, ?);',
+          [directions[i], recipe_id]);
 
       rows.push(row);
     }

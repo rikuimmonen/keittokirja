@@ -18,11 +18,12 @@ router.route('/').
     get(recipe_list_get).
     post(upload.single('recipeImage'),
         //body('name').not().isEmpty().escape(),
+        passport.authenticate('jwt', {session: false}),
         recipe_post,
     );
 
 router.route('/:id').
-    put(recipe_put).
+    put(passport.authenticate('jwt', {session: false}), recipe_put).
     get(recipe_get).
     delete(passport.authenticate('jwt', {session: false}), recipe_delete);
 

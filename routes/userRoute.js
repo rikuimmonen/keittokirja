@@ -3,11 +3,16 @@
 const express = require('express');
 const router = express.Router();
 const {
-  user_list_get, user_get, checkToken, user_recipe_list_get, user_recipe_get,
-} = require(
-    '../controllers/userController');
+  user_list_get,
+  user_get,
+  checkToken,
+  user_recipe_list_get,
+  user_recipe_get,
+} = require('../controllers/userController');
+const passport = require('../utils/pass');
 
-router.get('/token', checkToken);
+router.get('/token', passport.authenticate('jwt', {session: false}),
+    checkToken);
 router.get('/', user_list_get);
 router.get('/:id', user_get);
 router.get('/:id/recipe/', user_recipe_list_get);

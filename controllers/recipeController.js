@@ -38,6 +38,8 @@ const recipe_get = async (req, res, next) => {
 const recipe_post = async (req, res, next) => {
   const errors = validationResult(req);
 
+  console.log(req.body);
+
   if (!errors.isEmpty()) {
     console.log('recipe_post validation', errors.array());
     next(httpError('invalid data', 400));
@@ -57,8 +59,7 @@ const recipe_post = async (req, res, next) => {
     );
     const {recipeTitle, recipeSize, recipeTime, recipeIngredient, recipeDirection} = req.body;
     const img = req.file.filename;
-    // const user_id = req.user.user_id;
-    const user_id = 1;
+    const user_id = req.user.id;
     const result = await addRecipe(recipeTitle, recipeSize, recipeTime, recipeIngredient, recipeDirection, user_id, img, next);
     if (thumbnail) {
       if (result.affectedRows > 0) {
