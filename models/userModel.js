@@ -54,7 +54,7 @@ const getUserLogin = async (params) => {
 const getUsersAllRecipes = async (user_id, next) => {
   try {
     let [row] = await promisePool.execute(
-        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name, user.image_url AS user_image FROM recipe LEFT JOIN user ON creator = user.id WHERE creator = ?',
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id FROM recipe LEFT JOIN user ON creator = user.id WHERE creator = ?',
         [user_id]);
 
     for (let i = 0; i < row.length; i++) {
@@ -72,7 +72,7 @@ const getUsersAllRecipes = async (user_id, next) => {
 const getUsersRecipe = async (user_id, recipe_id, next) => {
   try {
     let [row] = await promisePool.execute(
-        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name, user.image_url AS user_image FROM recipe LEFT JOIN user ON creator = user.id WHERE user.id = ? AND recipe.id = ?;',
+        'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name FROM recipe LEFT JOIN user ON creator = user.id WHERE user.id = ? AND recipe.id = ?;',
         [user_id, recipe_id]);
 
     row[0].ingredients = await getIngredients(recipe_id, next);
