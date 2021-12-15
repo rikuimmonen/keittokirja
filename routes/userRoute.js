@@ -13,7 +13,7 @@ const passport = require('../utils/pass');
 
 router.get('/token', passport.authenticate('jwt', {session: false}),
     checkToken);
-router.get('/', user_list_get);
+router.get('/', passport.authenticate('jwt', {session: false}), user_list_get);
 router.get('/:id', user_get);
 router.get('/:id/recipe/', user_recipe_list_get);
 router.get('/:id/recipe/:r_id', user_recipe_get);
