@@ -57,6 +57,14 @@ const getUsersAllRecipes = async (user_id, next) => {
         [user_id]);
 
     for (let i = 0; i < row.length; i++) {
+      const img = row[i].recipe_image;
+      row[i].recipe_image = {
+        'big': '/img/big/' + img + '.jpeg',
+        'small': '/img/small/' + img + '.jpeg',
+      };
+    }
+
+    for (let i = 0; i < row.length; i++) {
       row[i].ingredients = await getIngredients(row[i].recipe_id, next);
       row[i].directions = await getDirections(row[i].recipe_id, next);
     }
@@ -73,6 +81,12 @@ const getUsersRecipe = async (user_id, recipe_id, next) => {
     let [row] = await promisePool.execute(
         'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name FROM recipe LEFT JOIN user ON creator = user.id WHERE user.id = ? AND recipe.id = ?;',
         [user_id, recipe_id]);
+
+    const img = row[0].recipe_image;
+    row[0].recipe_image = {
+      'big': '/img/big/' + img + '.jpeg',
+      'small': '/img/small/' + img + '.jpeg',
+    };
 
     row[0].ingredients = await getIngredients(recipe_id, next);
     row[0].directions = await getDirections(recipe_id, next);

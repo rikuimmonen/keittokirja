@@ -39,6 +39,12 @@ const getRecipe = async (id, next) => {
         'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name FROM recipe LEFT JOIN user ON creator = user.id WHERE recipe.id = ? ;',
         [id]);
 
+      const img = row[0].recipe_image;
+      row[0].recipe_image = {
+        'big': '/img/big/' + img + '.jpeg',
+        'small': '/img/small/' + img + '.jpeg',
+      };
+
     row[0].ingredients = await getIngredients(id, next);
     row[0].directions = await getDirections(id, next);
 
