@@ -37,8 +37,6 @@ const recipe_get = async (req, res, next) => {
 const recipe_post = async (req, res, next) => {
   const errors = validationResult(req);
 
-  console.log(req.body);
-
   if (!errors.isEmpty()) {
     console.log('recipe_post validation', errors.array());
     next(httpError('invalid data', 400));
@@ -93,16 +91,8 @@ const recipe_put = async (req, res, next) => {
       recipeDirection,
     } = req.body;
 
-    let user_id = req.user.id;
-
-    console.log(user_id);
-
-    if (req.user.role === 0) {
-      user_id = req.body.creator;
-    }
     const result = await editRecipe(req.params.id, recipeTitle, recipeSize,
-        recipeTime,
-        recipeIngredient, recipeDirection, req.user.id, next);
+        recipeTime, recipeIngredient, recipeDirection, req.user.id, next);
     if (result.affectedRows > 0) {
       res.json({
         message: 'recipe edited',

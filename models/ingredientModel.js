@@ -59,10 +59,13 @@ const editIngredient = async (ingredients, recipe_id, next) => {
       ingredients.push(ingredient);
     }
 
+    let [ingredientIds] = await promisePool.execute(
+        'SELECT id FROM ingredient WHERE recipe_id = ' + recipe_id + ';');
+
     for (let i = 0; i < ingredients.length; i++) {
       [row] = await promisePool.execute(
-          'INSERT INTO ingredient (content, recipe_id) VALUES (?, ?);',
-          [ingredients[i], recipe_id]);
+          'UPDATE ingredient SET content = ? WHERE id = ?;',
+          [ingredients[i], ingredientIds[i].id]);
 
       rows.push(row);
     }

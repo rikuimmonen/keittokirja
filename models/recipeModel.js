@@ -3,8 +3,10 @@
 const pool = require('../database/db');
 const promisePool = pool.promise();
 const {httpError} = require('../utils/errors');
-const {addIngredient, getIngredients} = require('./ingredientModel');
-const {addDirection, getDirections} = require('./directionModel');
+const {addIngredient, getIngredients, editIngredient} = require(
+    './ingredientModel');
+const {addDirection, getDirections, editDirection} = require(
+    './directionModel');
 
 const getAllRecipes = async (next) => {
   try {
@@ -61,7 +63,8 @@ const editRecipe = async (
     const [rows] = await promisePool.execute(
         'UPDATE recipe SET title = ?, size = ?, time = ? WHERE recipe.id = ? AND creator = ?',
         [title, size, time, id, creator]);
-    //await editDirection(directions, id, next);
+    await editDirection(directions, id, next);
+    await editIngredient(ingredients, id, next);
     return rows;
   } catch (e) {
     console.error('editRecipe error', e.message);

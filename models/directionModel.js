@@ -59,10 +59,13 @@ const editDirection = async (directions, recipe_id, next) => {
       directions.push(direction);
     }
 
+    let [directionIds] = await promisePool.execute(
+        'SELECT id FROM direction WHERE recipe_id = ' + recipe_id + ';');
+
     for (let i = 0; i < directions.length; i++) {
       [row] = await promisePool.execute(
-          'UPDATE direction SET content = ?;',
-          [directions[i], recipe_id]);
+          'UPDATE direction SET content = ? WHERE id = ?;',
+          [directions[i], directionIds[i].id]);
 
       rows.push(row);
     }
