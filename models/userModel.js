@@ -47,7 +47,6 @@ const getUserLogin = async (params) => {
     return rows;
   } catch (e) {
     console.log('getUserLogin error', e.message);
-    //next(httpError('Database error', 500));
   }
 };
 

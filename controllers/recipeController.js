@@ -5,7 +5,6 @@ const {getAllRecipes, getRecipe, addRecipe, editRecipe, deleteRecipe} = require(
 const {httpError} = require('../utils/errors');
 const {validationResult} = require('express-validator');
 const {makeThumbnail} = require('../utils/resize');
-const {getCoordinates} = require('../utils/imageMeta');
 
 const recipe_list_get = async (req, res, next) => {
   try {
@@ -57,10 +56,17 @@ const recipe_post = async (req, res, next) => {
         req.file.path,
         './thumbnails/' + req.file.filename,
     );
-    const {recipeTitle, recipeSize, recipeTime, recipeIngredient, recipeDirection} = req.body;
+    const {
+      recipeTitle,
+      recipeSize,
+      recipeTime,
+      recipeIngredient,
+      recipeDirection,
+    } = req.body;
     const img = req.file.filename;
     const user_id = req.user.id;
-    const result = await addRecipe(recipeTitle, recipeSize, recipeTime, recipeIngredient, recipeDirection, user_id, img, next);
+    const result = await addRecipe(recipeTitle, recipeSize, recipeTime,
+        recipeIngredient, recipeDirection, user_id, img, next);
     if (thumbnail) {
       if (result.affectedRows > 0) {
         res.json({
@@ -79,32 +85,42 @@ const recipe_post = async (req, res, next) => {
 
 const recipe_put = async (req, res, next) => {
   try {
-    const {name} = req.body;
-    let owner = req.user.user_id;
+    const {
+      recipeTitle,
+      recipeSize,
+      recipeTime,
+      recipeIngredient,
+      recipeDirection,
+    } = req.body;
+
+    let user_id = req.user.id;
+
+    console.log(user_id);
 
     if (req.user.role === 0) {
-      owner = req.body.creator;
+      user_id = req.body.creator;
     }
-
-    const result = await editRecipe(req.params.id, name, owner, req.user.role,
-        next);
+    const result = await editRecipe(req.params.id, recipeTitle, recipeSize,
+        recipeTime,
+        recipeIngredient, recipeDirection, req.user.id, next);
     if (result.affectedRows > 0) {
       res.json({
         message: 'recipe edited',
         recipe_id: result.insertId,
       });
+
     } else {
       next(httpError('No recipe edited', 400));
     }
   } catch (e) {
-    console.log('recipe_edit error', e.message);
+    console.log('recipe_put error', e.message);
     next(httpError('Internal server error', 500));
   }
 };
 
 const recipe_delete = async (req, res, next) => {
   try {
-    console.log(req.params, req.user)
+    console.log(req.params, req.user);
     const result = await deleteRecipe(req.params.id, req.user.id,
         req.user.role, next);
     if (result.affectedRows > 0) {

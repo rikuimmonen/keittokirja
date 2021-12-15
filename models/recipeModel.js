@@ -54,35 +54,25 @@ const addRecipe = async (
   }
 };
 
-const editRecipe = async (id, name, creator, role, next) => {
-  let sql = 'UPDATE kk_recipe SET name = ?, WHERE kk_recipe.id = ? AND creator = ?';
-  let params = [name, id, creator];
-
-  if (role === 0) {
-    sql = 'UPDATE kk_recipe SET name = ?, WHERE kk_recipe.id = ?';
-    params = [name, id];
-  }
+const editRecipe = async (
+    id, title, size, time, ingredients, directions, creator, next) => {
 
   try {
-    const [rows] = await promisePool.execute(sql, params);
+    const [rows] = await promisePool.execute(
+        'UPDATE recipe SET title = ?, size = ?, time = ? WHERE recipe.id = ? AND creator = ?',
+        [title, size, time, id, creator]);
+    //await editDirection(directions, id, next);
     return rows;
   } catch (e) {
-    console.error('editCat error', e.message);
+    console.error('editRecipe error', e.message);
     next(httpError('Database error', 500));
   }
 };
 
 const deleteRecipe = async (id, creator, role, next) => {
-  console.log(id);
   let sql = 'DELETE FROM recipe WHERE id = ? AND creator = ?';
   let params = [id, creator];
 
-  /*
-  if (role === 0) {
-    sql = 'DELETE FROM wop_cat WHERE cat_id = ?';
-    params = [id];
-  }
-  */
   try {
     const [rows] = await promisePool.execute(sql, params);
     return rows;

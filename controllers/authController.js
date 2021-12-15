@@ -9,7 +9,7 @@ const salt = bcrypt.genSaltSync(12);
 
 const login = (req, res, next) => {
   passport.authenticate('local', {session: false}, (err, user, info) => {
-    console.log('login info', err, user, info);
+    //console.log('login info', err, user, info);
 
     if (err || !user) {
       next(httpError('Invalid username/password', 400));
@@ -34,7 +34,7 @@ const user_post = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log('user_post validation', errors.array());
+    //console.log('user_post validation', errors.array());
     next(httpError('invalid data', 400));
     return;
   }

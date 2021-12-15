@@ -12,7 +12,7 @@ const addIngredient = async (ingredients, recipe_id, next) => {
     if (!Array.isArray(ingredients)) {
       let ingredient = ingredients;
       ingredients = [];
-      ingredients.push(ingredient)
+      ingredients.push(ingredient);
     }
 
     for (let i = 0; i < ingredients.length; i++) {
@@ -48,7 +48,34 @@ const getIngredients = async (recipe_id, next) => {
   }
 };
 
+const editIngredient = async (ingredients, recipe_id, next) => {
+  try {
+    let rows = [];
+    let row = '';
+
+    if (!Array.isArray(ingredients)) {
+      let ingredient = ingredients;
+      ingredients = [];
+      ingredients.push(ingredient);
+    }
+
+    for (let i = 0; i < ingredients.length; i++) {
+      [row] = await promisePool.execute(
+          'INSERT INTO ingredient (content, recipe_id) VALUES (?, ?);',
+          [ingredients[i], recipe_id]);
+
+      rows.push(row);
+    }
+
+    return rows;
+  } catch (e) {
+    console.error('editIngredient error', e.message);
+    next(httpError('Database error', 500));
+  }
+};
+
 module.exports = {
   addIngredient,
   getIngredients,
+  editIngredient,
 };

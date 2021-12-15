@@ -3,9 +3,9 @@
 const express = require('express');
 const router = express.Router();
 const {
+  checkToken,
   user_list_get,
   user_get,
-  checkToken,
   user_recipe_list_get,
   user_recipe_get,
 } = require('../controllers/userController');

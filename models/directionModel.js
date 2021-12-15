@@ -12,7 +12,7 @@ const addDirection = async (directions, recipe_id, next) => {
     if (!Array.isArray(directions)) {
       let direction = directions;
       directions = [];
-      directions.push(direction)
+      directions.push(direction);
     }
 
     for (let i = 0; i < directions.length; i++) {
@@ -48,7 +48,34 @@ const getDirections = async (recipe_id, next) => {
   }
 };
 
+const editDirection = async (directions, recipe_id, next) => {
+  try {
+    let rows = [];
+    let row = '';
+
+    if (!Array.isArray(directions)) {
+      let direction = directions;
+      directions = [];
+      directions.push(direction);
+    }
+
+    for (let i = 0; i < directions.length; i++) {
+      [row] = await promisePool.execute(
+          'UPDATE direction SET content = ?;',
+          [directions[i], recipe_id]);
+
+      rows.push(row);
+    }
+
+    return rows;
+  } catch (e) {
+    console.error('addDirection error', e.message);
+    next(httpError('Database error', 500));
+  }
+};
+
 module.exports = {
   addDirection,
   getDirections,
+  editDirection,
 };
