@@ -84,6 +84,29 @@ const getUsersRecipe = async (user_id, recipe_id, next) => {
   }
 };
 
+const editUser = async (id, name, email, password, next) => {
+  try {
+    const [rows] = await promisePool.execute(
+        'UPDATE user SET name = ?, email = ?, password = ? WHERE id = ?',
+        [name, email, password, id]);
+    return rows;
+  } catch (e) {
+    console.error('editUser error', e.message);
+    next(httpError('Database error', 500));
+  }
+};
+
+const deleteUser = async (id, next) => {
+  try {
+    const [rows] = await promisePool.execute('DELETE FROM user WHERE id = ?',
+        [id]);
+    return rows;
+  } catch (e) {
+    console.error('deleteUser error', e.message);
+    next(httpError('Database error', 500));
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUser,
@@ -91,4 +114,6 @@ module.exports = {
   getUsersAllRecipes,
   getUsersRecipe,
   getUserLogin,
+  editUser,
+  deleteUser,
 };

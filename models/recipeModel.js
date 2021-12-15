@@ -14,6 +14,14 @@ const getAllRecipes = async (next) => {
         'SELECT recipe.id AS recipe_id, title, date, size, time, recipe.image_url AS recipe_image, user.id AS user_id, name FROM recipe LEFT JOIN user ON creator = user.id;');
 
     for (let i = 0; i < row.length; i++) {
+      const img = row[i].recipe_image;
+      row[i].recipe_image = {
+        'big': '/img/big/' + img + '.jpeg',
+        'small': '/img/small/' + img + '.jpeg',
+      };
+    }
+
+    for (let i = 0; i < row.length; i++) {
       row[i].ingredients = await getIngredients(row[i].recipe_id, next);
       row[i].directions = await getDirections(row[i].recipe_id, next);
     }
@@ -73,11 +81,9 @@ const editRecipe = async (
 };
 
 const deleteRecipe = async (id, creator, role, next) => {
-  let sql = 'DELETE FROM recipe WHERE id = ? AND creator = ?';
-  let params = [id, creator];
-
   try {
-    const [rows] = await promisePool.execute(sql, params);
+    const [rows] = await promisePool.execute(
+        'DELETE FROM recipe WHERE id = ? AND creator = ?', [id, creator]);
     return rows;
   } catch (e) {
     console.error('deleteRecipe error', e.message);

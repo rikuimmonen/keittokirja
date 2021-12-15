@@ -4,7 +4,7 @@ const {getAllRecipes, getRecipe, addRecipe, editRecipe, deleteRecipe} = require(
     '../models/recipeModel');
 const {httpError} = require('../utils/errors');
 const {validationResult} = require('express-validator');
-const {makeThumbnail} = require('../utils/resize');
+const {makeThumbnail, makeBigImage, makeSmallImage} = require('../utils/resize');
 
 const recipe_list_get = async (req, res, next) => {
   try {
@@ -54,6 +54,17 @@ const recipe_post = async (req, res, next) => {
         req.file.path,
         './thumbnails/' + req.file.filename,
     );
+
+    const bigImage = await makeBigImage(
+        req.file.path,
+        './img/big/' + req.file.filename + '.jpeg',
+    );
+
+    const smallImage = await makeSmallImage(
+        req.file.path,
+        './img/small/' + req.file.filename + '.jpeg',
+    );
+
     const {
       recipeTitle,
       recipeSize,
@@ -65,7 +76,7 @@ const recipe_post = async (req, res, next) => {
     const user_id = req.user.id;
     const result = await addRecipe(recipeTitle, recipeSize, recipeTime,
         recipeIngredient, recipeDirection, user_id, img, next);
-    if (thumbnail) {
+    if (thumbnail && bigImage && smallImage) {
       if (result.affectedRows > 0) {
         res.json({
           message: 'recipe added',
@@ -110,7 +121,6 @@ const recipe_put = async (req, res, next) => {
 
 const recipe_delete = async (req, res, next) => {
   try {
-    console.log(req.params, req.user);
     const result = await deleteRecipe(req.params.id, req.user.id,
         req.user.role, next);
     if (result.affectedRows > 0) {

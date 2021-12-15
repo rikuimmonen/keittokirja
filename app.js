@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('./uploads/'));
 app.use('/thumbnails', express.static('thumbnails'));
+app.use('/img', express.static('img'));
 app.use(passport.initialize());
 
 app.use('/auth', authRoute);

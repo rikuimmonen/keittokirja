@@ -308,6 +308,12 @@ $RECYCLE.BIN/
 # ignore content of uploads folder
 uploads/*
 thumbnails/*
+img/*
+img/big/*
+img/small/*
 # except one (empty) file to have the folder in version control
 !uploads/.gitkeep
 !thumbnails/.gitkeep
+!img/.gitkeep
+!img/big/.gitkeep
+!img/small/.gitkeep
